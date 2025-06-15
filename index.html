@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全屏ing</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        button:first-child {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+        }
+        button:last-child {
+            background: linear-gradient(135deg, #F44336, #C62828);
+            color: white;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+    </style>
+    <style>
+        #customModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #F44336, #C62828);
+            padding: 30px;
+            border-radius: 25px;
+            color: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 100;
+            text-align: center;
+        }
+        #modalClose {
+            margin-top: 15px;
+            padding: 8px 20px;
+            background: white;
+            color: #F44336;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button id="wrongBtn">我也喜欢你</button>
+    <button id="rightBtn">我不喜欢你</button>
+    
+    <div id="customModal">
+        <p>太好了awa</p>
+        <button id="modalClose">确定</button>
+    </div>
+    
+    <div id="clownModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #4CAF50, #2E7D32); padding: 30px; border-radius: 25px; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 100; text-align: center;">
+        <p>抓到你了！</p>
+        <img src="https://emojigraph.org/media/microsoft/smiling-face-with-hearts_1f970.png" alt="clown" id="clownAnim2" style="width: 80px; height: 80px; display: block; margin: 0 auto 15px auto; animation: clown-bounce2 1s infinite;">
+        <button id="clownModalClose" style="margin-top: 15px; padding: 8px 20px; background: white; color: #4CAF50; border: none; border-radius: 20px; font-weight: bold; cursor: pointer;">关闭</button>
+    </div>
+
+    <script>
+
+        // 创建音频元素
+        const clownAudio = new Audio('.mp3');
+        
+        document.getElementById('rightBtn').addEventListener('click', function() {
+            // 30%概率显示浮动小丑和播放音频
+            if (Math.random() < 0.2) {
+                // 创建浮动小丑元素
+                const floatingClown = document.createElement('img');
+                floatingClown.src = 'https://emojigraph.org/media/microsoft/smiling-face-with-hearts_1f970.png';
+                alert(/再考虑一下/)
+                floatingClown.style.position = 'fixed';
+                floatingClown.style.width = '80px';
+                floatingClown.style.height = '80px';
+                floatingClown.style.zIndex = '1000';
+                floatingClown.style.animation = 'clown-bounce 1s infinite';
+                
+                // 随机位置
+                const x = Math.random() * (window.innerWidth - 80);
+                const y = Math.random() * (window.innerHeight - 80);
+                floatingClown.style.left = x + 'px';
+                floatingClown.style.top = y + 'px';
+                
+                document.body.appendChild(floatingClown);
+                
+                // 播放音频
+                clownAudio.play().catch(e => console.log('音频播放失败:', e));
+                
+                // 3秒后移除小丑
+                setTimeout(() => {
+                    floatingClown.remove();
+                }, 3000);
+                
+                // 继续执行原有逻辑
+            }
+
+            // 获取屏幕尺寸
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+
+            // 进入全屏函数
+            function enterFullscreen() {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+                    document.documentElement.msRequestFullscreen();
+                }
+            }
+
+            // 点击按钮进入全屏
+            enterFullscreen();
+
+            // 监听全屏变化，用户退出后自动重新进入
+            document.addEventListener('fullscreenchange', function() {
+                if (!document.fullscreenElement) {
+                    enterFullscreen();
+                }
+            });
+            document.addEventListener('webkitfullscreenchange', function() {
+                if (!document.webkitFullscreenElement) {
+                    enterFullscreen();
+                }
+            });
+            document.addEventListener('mozfullscreenchange', function() {
+                if (!document.mozFullScreenElement) {
+                    enterFullscreen();
+                }
+            });
+            document.addEventListener('MSFullscreenChange', function() {
+                if (!document.msFullscreenElement) {
+                    enterFullscreen();
+                }
+            });
+            
+            // 生成随机移动位置(不超过屏幕的70%)
+            const maxX = screenWidth * 0.7;
+            const maxY = screenHeight * 0.7;
+            const randomX = Math.floor(Math.random() * maxX * 0.8) - maxX * 0.4;
+            const randomY = Math.floor(Math.random() * maxY * 0.8) - maxY * 0.4;
+            
+            // 移动"我没错"按钮
+            this.style.position = 'relative';
+            this.style.left = randomX + 'px';
+            this.style.top = randomY + 'px';
+            
+            // 放大"我错了"按钮
+            document.getElementById('wrongBtn').style.transform = 'scale(1.2)';
+            
+            // 30%概率交换按钮相对位置
+            if (Math.random() < 0.3) {
+                const rightBtn = document.getElementById('rightBtn');
+                const wrongBtn = document.getElementById('wrongBtn');
+                
+                // 确保按钮使用相对定位
+                rightBtn.style.position = 'relative';
+                wrongBtn.style.position = 'relative';
+                
+                // 交换left值
+                const tempLeft = rightBtn.style.left;
+                rightBtn.style.left = '0px'; // 向右移动100px
+                wrongBtn.style.left = '0px'; // 向左移动100px
+                
+                // 3秒后恢复原状
+                setTimeout(() => {
+                    rightBtn.style.left = tempLeft;
+                    wrongBtn.style.left = '';
+                }, 3000);
+            }
+            
+            // 3秒后恢复原状
+            setTimeout(() => {
+                this.style.position = '';
+                this.style.left = '';
+                this.style.top = '';
+                document.getElementById('wrongBtn').style.transform = '';
+            }, 300000);
+        });
+        // 弹窗功能
+        const modal = document.getElementById('customModal');
+        const wrongBtn = document.getElementById('wrongBtn');
+        const closeBtn = document.getElementById('modalClose');
+
+        // 添加小丑动画元素
+        let clownImg = document.createElement('img');
+        clownImg.src = 'https://emojigraph.org/media/microsoft/smiling-face-with-hearts_1f970.png'; // 小丑表情
+        clownImg.alt = 'clown';
+        clownImg.id = 'clownAnim';
+        clownImg.style.width = '80px';
+        clownImg.style.height = '80px';
+        clownImg.style.display = 'block';
+        clownImg.style.margin = '0 auto 15px auto';
+        clownImg.style.animation = 'clown-bounce 1s infinite';
+
+        // 定义动画样式
+        const clownStyle = document.createElement('style');
+        clownStyle.innerHTML = `
+        @keyframes clown-bounce {
+            0%, 100% { transform: translateY(0);}
+            50% { transform: translateY(-25px);}
+        }
+        `;
+        document.head.appendChild(clownStyle);
+
+        // 弹窗显示时插入小丑动画
+        wrongBtn.addEventListener('click', function() {
+            if (!modal.querySelector('#clownAnim')) {
+            modal.insertBefore(clownImg, modal.firstChild);
+            }
+            modal.style.display = 'block';
+        });
+
+        wrongBtn.addEventListener('click', function() {
+            modal.style.display = 'block';
+        });
+
+        closeBtn.addEventListener('click', function() {
+            //按确定后的跳转
+            window.location.href = '';
+            modal.style.display = 'none';
+        });
+
+        // 点击弹窗外部关闭
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+    <div style="position: fixed; bottom: 16px; right: 16px; font-size: 14px; color: #888;">
+        <a href="https://github.com/" target="_blank" style="color: #4CAF50; text-decoration: none;">
+            GitHub开源地址--By <strong>Hmis</strong>
+        </a>
+    </div>
+</body>
+</html>
